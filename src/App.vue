@@ -15,11 +15,6 @@ export default {
     InputsSection,
     HistorySection,
   },
-  methods: {
-    updateHistory(data) {
-      this.history.push(data);
-    },
-  },
   data() {
     return {
       history: [],
