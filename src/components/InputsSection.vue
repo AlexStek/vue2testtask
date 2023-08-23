@@ -1,54 +1,97 @@
 <template>
   <div>
     <div class="inputs">
-      <input
+      <DebounceInput
         class="flex-item"
         type="text"
         id="price"
         placeholder="Цена"
         v-model="price"
       />
-      <input
+      <DebounceInput
         class="flex-item"
         type="text"
         id="count"
         placeholder="Количество"
         v-model="count"
       />
-      <input
+      <DebounceInput
         class="flex-item"
         type="text"
         id="sum"
         placeholder="Сумма"
         v-model="sum"
       />
-      <button class="flex-item" type="button">Отправить</button>
+      <button
+        class="flex-item"
+        type="button"
+        @click="saveData"
+        :disabled="disable"
+      >
+        Отправить
+      </button>
     </div>
     <div class="labels">
       <p class="flex-item">Цена: {{ price }}</p>
       <p class="flex-item">Количество: {{ count }}</p>
       <p class="flex-item">Сумма: {{ sum }}</p>
-      <p class="flex-item">{{ prevChangedField }} {{ lastChangedField }}</p>
+      <p class="flex-item">{{ localData }}</p>
     </div>
   </div>
 </template>
 
 <script>
 import Vue from "vue";
+import DebounceInput from "./DebounceInput.vue";
+
+async function sendToServer(data) {
+  localStorage.setItem("data", JSON.stringify(data));
+  await new Promise((resolve) => {
+    setTimeout(() => {
+      return resolve();
+    }, 1000);
+  });
+  return {
+    success: true,
+  };
+}
 
 export default {
   name: "InputsSection",
+  components: {
+    DebounceInput,
+  },
   data() {
     return {
       price: 0,
       count: 0,
       sum: 0,
+      nonce: 0,
+      localData: null,
       prevChangedField: "count", // price, count or sum
       lastChangedField: "price", // price, count or sum
       processing: false,
+      disable: false,
     };
   },
   methods: {
+    async saveData() {
+      if (this.disable) {
+        return;
+      }
+      this.disable = true;
+      const data = {
+        nonce: this.nonce,
+        price: this.price,
+        qty: this.sum,
+        amount: this.count,
+      };
+      this.nonce++;
+      const result = await sendToServer(data);
+      console.log("result", result);
+      this.localData = data;
+      this.disable = false;
+    },
     updateChangeOrder(field) {
       if (this.lastChangedField !== field) {
         this.prevChangedField = this.lastChangedField;
@@ -102,6 +145,10 @@ export default {
         this.processing = false;
       });
     },
+  },
+  created() {
+    const data = localStorage.getItem("data");
+    this.localData = data;
   },
 };
 </script>
