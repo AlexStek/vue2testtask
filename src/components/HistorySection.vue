@@ -8,14 +8,17 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+
 export default {
   name: "HistorySection",
   props: {
     history: Array,
   },
   computed: {
+    ...mapGetters(["getHistory"]),
     historyReversed() {
-      return [...this.history].reverse();
+      return [...this.getHistory].reverse();
     },
   },
 };

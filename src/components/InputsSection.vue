@@ -35,7 +35,7 @@
       <p class="flex-item">Цена: {{ price }}</p>
       <p class="flex-item">Количество: {{ count }}</p>
       <p class="flex-item">Сумма: {{ sum }}</p>
-      <p class="flex-item">{{ localData }}</p>
+      <p class="flex-item">{{ getLocalData }}</p>
     </div>
   </div>
 </template>
@@ -43,18 +43,7 @@
 <script>
 import Vue from "vue";
 import DebounceInput from "./DebounceInput.vue";
-
-async function sendToServer(data) {
-  localStorage.setItem("data", JSON.stringify(data));
-  await new Promise((resolve) => {
-    setTimeout(() => {
-      return resolve();
-    }, 1000);
-  });
-  return {
-    success: true,
-  };
-}
+import { mapGetters } from "vuex";
 
 export default {
   name: "InputsSection",
@@ -66,8 +55,6 @@ export default {
       price: 0,
       count: 0,
       sum: 0,
-      nonce: 0,
-      localData: null,
       prevChangedField: "count", // price, count or sum
       lastChangedField: "price", // price, count or sum
       processing: false,
@@ -81,15 +68,12 @@ export default {
       }
       this.disable = true;
       const data = {
-        nonce: this.nonce,
         price: this.price,
         qty: this.sum,
         amount: this.count,
       };
-      this.nonce++;
-      const result = await sendToServer(data);
-      console.log("result", result);
-      this.localData = data;
+      await this.$store.dispatch("saveToServer", data);
+
       this.disable = false;
     },
     updateChangeOrder(field) {
@@ -109,13 +93,16 @@ export default {
       }
       this.processing = true;
       this.updateChangeOrder("price");
-      this.addToHistory(`Введена цена: ${this.price}`);
+      this.$store.dispatch("addToHistory", `Введена цена: ${this.price}`);
       if (this.prevChangedField === "sum") {
         this.count = this.sum / this.price;
-        this.addToHistory(`Количество пересчитано: ${this.count}`);
+        this.$store.dispatch(
+          "addToHistory",
+          `Количество пересчитано: ${this.count}`
+        );
       } else {
         this.sum = this.price * this.count;
-        this.addToHistory(`Сумма пересчитана: ${this.sum}`);
+        this.$store.dispatch("addToHistory", `Сумма пересчитана: ${this.sum}`);
       }
       Vue.nextTick(() => {
         this.processing = false;
@@ -127,13 +114,13 @@ export default {
       }
       this.processing = true;
       this.updateChangeOrder("count");
-      this.addToHistory(`Введено количество: ${this.count}`);
+      this.$store.dispatch("addToHistory", `Введено количество: ${this.count}`);
       if (this.prevChangedField === "sum") {
         this.price = this.sum / this.count;
-        this.addToHistory(`Цена пересчитано: ${this.price}`);
+        this.$store.dispatch("addToHistory", `Цена пересчитано: ${this.price}`);
       } else {
         this.sum = this.price * this.count;
-        this.addToHistory(`Сумма пересчитана: ${this.sum}`);
+        this.$store.dispatch("addToHistory", `Сумма пересчитана: ${this.sum}`);
       }
       Vue.nextTick(() => {
         this.processing = false;
@@ -145,13 +132,16 @@ export default {
       }
       this.processing = true;
       this.updateChangeOrder("sum");
-      this.addToHistory(`Введена сумма: ${this.sum}`);
+      this.$store.dispatch("addToHistory", `Введена сумма: ${this.sum}`);
       if (this.prevChangedField === "price") {
         this.count = this.sum / this.price;
-        this.addToHistory(`Количество пересчитано: ${this.count}`);
+        this.$store.dispatch(
+          "addToHistory",
+          `Количество пересчитано: ${this.count}`
+        );
       } else {
         this.price = this.sum / this.count;
-        this.addToHistory(`Цена пересчитано: ${this.price}`);
+        this.$store.dispatch("addToHistory", `Цена пересчитано: ${this.price}`);
       }
       Vue.nextTick(() => {
         this.processing = false;
@@ -161,6 +151,9 @@ export default {
   created() {
     const data = localStorage.getItem("data");
     this.localData = data;
+  },
+  computed: {
+    ...mapGetters(["getLocalData"]),
   },
 };
 </script>
