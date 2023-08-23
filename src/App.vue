@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-    <InputsSection @updateHistory="updateHistory" />
-    <HistorySection :history="history" />
+    <InputsSection />
+    <HistorySection />
   </div>
 </template>
 
@@ -29,6 +29,12 @@ export default {
 </script>
 
 <style>
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -39,5 +45,10 @@ export default {
   border: 1px solid black;
   max-width: 1200px;
   margin: 0 auto;
+  height: 100vh;
+  overflow: hidden;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
 }
 </style>

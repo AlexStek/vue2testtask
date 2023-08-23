@@ -82,9 +82,6 @@ export default {
         this.lastChangedField = field;
       }
     },
-    addToHistory(event) {
-      this.$emit("updateHistory", event);
-    },
   },
   watch: {
     price: function () {
@@ -95,13 +92,13 @@ export default {
       this.updateChangeOrder("price");
       this.$store.dispatch("addToHistory", `Введена цена: ${this.price}`);
       if (this.prevChangedField === "sum") {
-        this.count = this.sum / this.price;
+        this.count = this.sum / this.price || 0;
         this.$store.dispatch(
           "addToHistory",
           `Количество пересчитано: ${this.count}`
         );
       } else {
-        this.sum = this.price * this.count;
+        this.sum = this.price * this.count || 0;
         this.$store.dispatch("addToHistory", `Сумма пересчитана: ${this.sum}`);
       }
       Vue.nextTick(() => {
@@ -116,10 +113,10 @@ export default {
       this.updateChangeOrder("count");
       this.$store.dispatch("addToHistory", `Введено количество: ${this.count}`);
       if (this.prevChangedField === "sum") {
-        this.price = this.sum / this.count;
+        this.price = this.sum / this.count || 0;
         this.$store.dispatch("addToHistory", `Цена пересчитано: ${this.price}`);
       } else {
-        this.sum = this.price * this.count;
+        this.sum = this.price * this.count || 0;
         this.$store.dispatch("addToHistory", `Сумма пересчитана: ${this.sum}`);
       }
       Vue.nextTick(() => {
@@ -134,13 +131,13 @@ export default {
       this.updateChangeOrder("sum");
       this.$store.dispatch("addToHistory", `Введена сумма: ${this.sum}`);
       if (this.prevChangedField === "price") {
-        this.count = this.sum / this.price;
+        this.count = this.sum / this.price || 0;
         this.$store.dispatch(
           "addToHistory",
           `Количество пересчитано: ${this.count}`
         );
       } else {
-        this.price = this.sum / this.count;
+        this.price = this.sum / this.count || 0;
         this.$store.dispatch("addToHistory", `Цена пересчитано: ${this.price}`);
       }
       Vue.nextTick(() => {
