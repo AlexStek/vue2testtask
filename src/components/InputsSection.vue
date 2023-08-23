@@ -98,6 +98,9 @@ export default {
         this.lastChangedField = field;
       }
     },
+    addToHistory(event) {
+      this.$emit("updateHistory", event);
+    },
   },
   watch: {
     price: function () {
@@ -106,10 +109,13 @@ export default {
       }
       this.processing = true;
       this.updateChangeOrder("price");
+      this.addToHistory(`Введена цена: ${this.price}`);
       if (this.prevChangedField === "sum") {
         this.count = this.sum / this.price;
+        this.addToHistory(`Количество пересчитано: ${this.count}`);
       } else {
         this.sum = this.price * this.count;
+        this.addToHistory(`Сумма пересчитана: ${this.sum}`);
       }
       Vue.nextTick(() => {
         this.processing = false;
@@ -121,10 +127,13 @@ export default {
       }
       this.processing = true;
       this.updateChangeOrder("count");
+      this.addToHistory(`Введено количество: ${this.count}`);
       if (this.prevChangedField === "sum") {
         this.price = this.sum / this.count;
+        this.addToHistory(`Цена пересчитано: ${this.price}`);
       } else {
         this.sum = this.price * this.count;
+        this.addToHistory(`Сумма пересчитана: ${this.sum}`);
       }
       Vue.nextTick(() => {
         this.processing = false;
@@ -136,10 +145,13 @@ export default {
       }
       this.processing = true;
       this.updateChangeOrder("sum");
+      this.addToHistory(`Введена сумма: ${this.sum}`);
       if (this.prevChangedField === "price") {
         this.count = this.sum / this.price;
+        this.addToHistory(`Количество пересчитано: ${this.count}`);
       } else {
         this.price = this.sum / this.count;
+        this.addToHistory(`Цена пересчитано: ${this.price}`);
       }
       Vue.nextTick(() => {
         this.processing = false;

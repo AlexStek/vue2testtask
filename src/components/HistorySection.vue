@@ -1,12 +1,23 @@
 <template>
   <div class="history">
     <h2 class="title">История</h2>
+    <div>
+      <p v-for="(item, index) in historyReversed" :key="index">{{ item }}</p>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
   name: "HistorySection",
+  props: {
+    history: Array,
+  },
+  computed: {
+    historyReversed() {
+      return [...this.history].reverse();
+    },
+  },
 };
 </script>
 

@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-    <InputsSection />
-    <HistorySection />
+    <InputsSection @updateHistory="updateHistory" />
+    <HistorySection :history="history" />
   </div>
 </template>
 
@@ -14,6 +14,16 @@ export default {
   components: {
     InputsSection,
     HistorySection,
+  },
+  methods: {
+    updateHistory(data) {
+      this.history.push(data);
+    },
+  },
+  data() {
+    return {
+      history: [],
+    };
   },
 };
 </script>
